@@ -7,7 +7,10 @@ async function bootstrap() {
   
   // Enable CORS
   app.enableCors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Vite's default port
+    origin: [
+      'http://localhost:5173', 
+      'https://user-registration-fe-tau.vercel.app'
+    ],
     credentials: true,
   });
 

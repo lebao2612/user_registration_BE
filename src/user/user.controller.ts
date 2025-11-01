@@ -1,6 +1,7 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dto/register.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -16,6 +17,23 @@ export class UserController {
         email: user.email,
         createdAt: user.createdAt
       }
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Request() req) {
+    // req.user được trả về từ JwtStrategy
+    const userId = req.user.userId;
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      email: user.email,
+      createdAt: user.createdAt
     };
   }
 }

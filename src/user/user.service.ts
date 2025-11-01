@@ -31,4 +31,27 @@ export class UserService {
       throw new BadRequestException('Error creating user');
     }
   }
+
+  async findByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
+
+  async findById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).exec();
+  }
+
+  async setRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userModel.updateOne({ _id: userId }, {
+      $set: { refreshToken: hashedRefreshToken }
+    });
+  }
+
+  async removeRefreshToken(userId: string) {
+    await this.userModel.updateOne({ _id: userId }, {
+      $set: { refreshToken: null }
+    });
+  }
+
+
 }
